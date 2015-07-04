@@ -17,6 +17,8 @@ Data Frame Structure
 
 Bytes 9,10 can be safely ignored other than to determine if a complete frame has been read.  Currently, byte 7 can also be ignored unless its usage is ever determined.
 
+**PLEASE NOTE:** All values described below are decoded values.
+
 Multiplier - Byte 0
 --------------------
 Many measurement modes are capable of measuring values across several orders of magnitude.  To accomodate this range of values, the raw value must be scaled by a power of 10.  Byte 0 represents the exponent.  To apply this value:
@@ -25,7 +27,7 @@ Many measurement modes are capable of measuring values across several orders of 
 
 Raw Data - Bytes 1-4
 ---------------------
-Each of the 4 bytes that make up the raw value represent a single base-10 digit, with byte 1 being the most significant and byte 4 being the least significant.  The value can be extracted as follows:
+Each of the 4 bytes that make up the raw value is a BCD digit, with byte 1 being the most significant and byte 4 being the least significant.  The value can be extracted as follows:
 
 ```raw value = (byte1 - 48)*10^3 + (byte2 - 48)*10^2 + (byte3 - 48)*10 + (byte4 - 48).```
 
@@ -33,7 +35,7 @@ Note that this value *does not* contain a sign or the location of the decimal.
 
 Multimeter Modes - Byte 5
 ---------------------------------
-Most of the modes the multimeter supports is noted by a unique ID in byte 5.  There are three main exceptions, though.  Temperature and Frequency have "submodes" which are detailed under Flags - Byte 6 and AC/DC measurements detailed in Flags - Byte 8.
+Most of the modes supported by the multimeter are denoted by a unique ID in byte 5, with three exceptions.  Temperature and Frequency have "submodes" which are detailed under Flags - Byte 6 and AC/DC measurements detailed in Flags - Byte 8.
 
 | Value | Mode |
 | --------| ------- |
@@ -50,7 +52,7 @@ Most of the modes the multimeter supports is noted by a unique ID in byte 5.  Th
 
 Flags - Byte 6
 ---------------
-Byte 6 contains flags that are relevant to most modes and one specific to two different modes.
+Byte 6 contains flags that are applicable to most modes and one that is specific to two different modes.
 
 | Bit | Flag | Description |
 | --- | ---- | ----------- |
@@ -67,8 +69,8 @@ Byte 6 contains flags that are relevant to most modes and one specific to two di
 
 Flags - Byte 7
 ---------------
-The usage of this flag is unknown and is currently considered unused.  It could be used for a low battery indicator, though this hasn't been tested.
-The value of this flag appears to always be zero.
+The usage of this byte is unknown and is currently considered unused.  It could be used for a low battery indicator or for additional flags that may not be supported by this meter, though this hasn't been verified.
+This byte appears to always be zero.
 
 Flags - Byte 8
 ---------------
@@ -76,7 +78,7 @@ Flags - Byte 8
 | Bit | Flag | Description |
 | --- | ---- | ----------- |
 | 0 | *Unused* | |
-| 1 | Autorange | This flag is set if the meter is set to autorange mode. |
+| 1 | Autorange | Set if the meter is in autorange mode. |
 | 2 | AC | 1 only if meter is set to measure AC Voltage or Current |
 | 3 | DC | 1 only if meter is set to measure DC Voltage or Current |
 | 4 | *Unused* | |
